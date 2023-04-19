@@ -1,0 +1,38 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 1366px;
+}
+
+.el-breadcrumb {
+  margin: 15px 0 15px 15px;
+  font-size: 15px;
+}
+
+.el-col > .el-button{
+  margin: 5px 5px 10px 5px;
+}
+
+.el-card {
+  margin: 15px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-card__body{
+  padding: 10px;
+}
+
+.el-dialog__body{
+  padding: 15px 20px 0 0;
+}
+
+.el-dialog__footer{
+  padding: 0 10px 20px 10px;
+}
+
+.el-table {
+  font-size: 12px;
+}

@@ -56,30 +56,28 @@ export default {
     };
   },
   methods: {
-    // async login() {
-    //   console.log(123);
-    //   if (!this.userName || !this.password) return;
-    //   const { data: res } = await this.$http.post("login/", {
-    //     userName: this.userName,
-    //     password: this.password,
-    //   });
-    //   if (res.meta !== true) {
-    //     return this.$message({
-    //       showClose: true,
-    //       message: "登录失败",
-    //       type: "error",
-    //     });
-    //   }
-    //   window.sessionStorage.setItem("token", res.data.userId);
-    //   this.$store.dispatch("asyncUpdateUser", res.data);
-    //   this.$message({
-    //     showClose: true,
-    //     message: "登录成功",
-    //     type: "success",
-    //   });
-    //   this.$router.push("/home");
-    // },
-    login() {
+    async login() {
+      if (!this.userName || !this.password) return;
+      const { data: res } = await this.$http.post("login/", {
+        userName: this.userName,
+        password: this.password,
+      });
+      if (res.meta !== true) {
+        return this.$message({
+          showClose: true,
+          message: "登录失败",
+          type: "error",
+        });
+      }
+      if (res.data.roleName !== "管理员") {
+        return this.$message({
+          showClose: true,
+          message: "非管理员不能登录后台管理系统",
+          type: "error",
+        });
+      }
+      window.sessionStorage.setItem("token", res.data.userId);
+      this.$store.dispatch('asyncUpdateUser', res.data)
       this.$message({
         showClose: true,
         message: "登录成功",
@@ -87,6 +85,14 @@ export default {
       });
       this.$router.push("/home");
     },
+    // login() {
+    //   this.$message({
+    //     showClose: true,
+    //     message: "登录成功",
+    //     type: "success",
+    //   });
+    //   this.$router.push("/home");
+    // },
   },
 };
 </script>

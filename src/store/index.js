@@ -4,19 +4,21 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 //保存数据
-const state = {};
+const state = {
+  user:{}
+};
 
 //获取state数据
 const getters = {
-  getUser(data) {
-    if (data in state) return state.data;
+  getUser(state) {
+    return state.user;
   },
 };
 
 //同步执行修改state值方法
 const mutations = {
-  updateUser(user) {
-    state.user = user;
+  updateUser(state,data) {
+    state.user = data;
   },
 };
 

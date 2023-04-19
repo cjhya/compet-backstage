@@ -5,7 +5,7 @@
         <el-dropdown>
           <!-- <el-avatar shape="square">程家豪</el-avatar> -->
           <span class="el-dropdown-link">
-            程家豪<i class="el-icon-caret-bottom el-icon--right"></i>
+            {{userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="toHomePage">首页</el-dropdown-item>
@@ -28,36 +28,37 @@
         >
           <!-- 一级菜单 -->
           <el-submenu
-            :index="item.id + ''"
+            :index="item.auId + ''"
             v-for="item in menuList"
-            :key="item.id"
+            :key="item.auId"
           >
             <!-- 一级菜单模板区 -->
             <template slot="title">
               <!-- 图标 -->
-              <i :class="iconsObj[item.id]"></i>
+              <i :class="iconsObj[item.auId]"></i>
               <!-- 文本 -->
-              <span>{{ item.authName }}</span>
+              <span>{{ item.auName }}</span>
             </template>
             <!-- 二级菜单 -->
             <el-menu-item
-              :index="'/' + subItem.path"
+              :index="'/' + subItem.auPath"
               v-for="subItem in item.children"
-              :key="subItem.id"
-              @click="activePathState('/' + subItem.path)"
+              :key="subItem.auId"
+              @click="activePathState('/' + subItem.auPath)"
             >
               <template slot="title">
                 <!-- 图标 -->
-                <i :class="iconsObj[subItem.id]"></i>
+                <i :class="iconsObj[subItem.auId]"></i>
                 <!-- 文本 -->
-                <span>{{ subItem.authName }}</span>
+                <span>{{ subItem.auName }}</span>
               </template>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </aside>
       <div class="main">
-        <router-view></router-view>
+        <!-- 监听子组件触发事件 -->
+        <router-view @menuAu="getMenuList"></router-view>
       </div>
     </div>
   </div>
@@ -68,48 +69,66 @@ export default {
   name: "Home",
   data() {
     return {
-      menuList: [
-        {
-          id: 1,
-          authName: "用户管理",
-          children: [
-            { id: 11, authName: "权限管理", path: "authority" },
-            { id: 12, authName: "角色管理", path: "role" },
-            { id: 13, authName: "用户信息管理", path: "user" },
-          ],
-        },
-        {
-          id: 2,
-          authName: "竞赛管理",
-          children: [
-            { id: 21, authName: "竞赛分类管理", path: "classification" },
-            { id: 22, authName: "竞赛信息管理", path: "competInfor" },
-          ],
-        },
-        {
-          id: 3,
-          authName: "论坛管理",
-          children: [{ id: 31, authName: "文章信息管理", path:"articleInfor"}],
-        },
-      ],
-      activePath: "/authority",
+      roleId: "",
+      userName:"",
+      menuList: [],
+      // menuList: [
+      //   {
+      //     id: 1,
+      //     authName: "用户管理",
+      //     children: [
+      //       { id: 11, authName: "权限管理", path: "authority" },
+      //       { id: 12, authName: "角色管理", path: "role" },
+      //       { id: 13, authName: "用户信息管理", path: "user" },
+      //     ],
+      //   },
+      //   {
+      //     id: 2,
+      //     authName: "竞赛管理",
+      //     children: [
+      //       { id: 21, authName: "竞赛分类管理", path: "classification" },
+      //       { id: 22, authName: "竞赛信息管理", path: "competInfor" },
+      //     ],
+      //   },
+      //   {
+      //     id: 3,
+      //     authName: "论坛管理",
+      //     children: [{ id: 31, authName: "文章信息管理", path:"articleInfor"}],
+      //   },
+      // ],
+      activePath: "",
       iconsObj: {
         1: "el-icon-user",
-        11: "el-icon-lock",
-        12: "el-icon-s-custom",
-        13: "el-icon-user-solid",
-        2: "el-icon-s-platform",
-        21: "el-icon-collection-tag",
-        22: "el-icon-files",
-        3: "el-icon-s-order",
-        31: "el-icon-document",
+        2: "el-icon-lock",
+        3: "el-icon-s-custom",
+        4: "el-icon-user-solid",
+        5: "el-icon-s-platform",
+        6: "el-icon-collection-tag",
+        7: "el-icon-files",
+        8: "el-icon-s-order",
+        9: "el-icon-document",
+        10:"el-icon-tickets"
       },
     };
   },
+  created() {
+    this.roleId = this.$store.getters.getUser.roleId;
+    this.userName=this.$store.getters.getUser.name;
+    this.getMenuList();
+  },
   methods: {
-    toHomePage(){
+    //获取菜单权限
+    async getMenuList() {
+      const { data: res } = await this.$http.get(
+        "authority/getauthority?id=" + this.roleId
+      );
+      this.menuList = res.data;
+    },
+    //返回首页
+    toHomePage() {
       this.$router.push("/homePage");
     },
+    //退出登录
     logout() {
       window.sessionStorage.clear();
       this.$message({
@@ -119,10 +138,10 @@ export default {
       });
       this.$router.push("/login");
     },
-    activePathState(activePath){
-      this.activePath=activePath
-      console.log(this.activePath)
-    }
+    //记录当前菜单
+    activePathState(activePath) {
+      this.activePath = activePath;
+    },
   },
 };
 </script>
@@ -184,7 +203,7 @@ export default {
   border-right: 1px solid #909399;
 }
 
-.left .el-menu{
+.left .el-menu {
   border-right: 0;
 }
 

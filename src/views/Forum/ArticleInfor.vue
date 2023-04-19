@@ -1,5 +1,9 @@
 <template>
   <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item>论坛管理</el-breadcrumb-item>
+      <el-breadcrumb-item>文章信息管理</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-card>
       <!-- 论坛文章列表区域 -->
       <el-table :data="articleInforList" border stripe v-show="isShow">

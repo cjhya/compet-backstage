@@ -1,12 +1,13 @@
 <template>
   <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-card>
       <el-row>
         <el-col>
-          <el-button
-            type="primary"
-            class="addAutButton"
-            @click="addDialogVisible = true"
+          <el-button type="primary" @click="addDialogVisible = true"
             >添加权限</el-button
           >
         </el-col>
@@ -14,22 +15,16 @@
       <!-- 权限图 -->
       <template>
         <el-row
-          :class="[
-            'bdbottom',
-            'bdleft',
-            'bdright',
-            i1 === 0 ? 'bdtop' : '',
-            'vcenter',
-          ]"
+          :class="['bdbottom', i1 === 0 ? 'bdtop' : '', 'vcenter']"
           v-for="(aut1, i1) in autTree"
-          :key="aut1.id"
+          :key="aut1.auId"
         >
           <!-- 渲染一级权限 -->
           <el-col :span="10">
             <el-tag
               closable
-              @close="removeAutById(aut1.id)"
-              @click="getAutById(aut1.id)"
+              @close="removeAutById(aut1.auId)"
+              @click="getAutById(aut1.auId)"
               >{{ aut1.auName }}</el-tag
             >
           </el-col>
@@ -39,8 +34,8 @@
               <el-tag
                 type="success"
                 closable
-                @close="removeAutById(aut2.id)"
-                @click="getAutById(aut2.id)"
+                @close="removeAutById(aut2.auId)"
+                @click="getAutById(aut2.auId)"
               >
                 {{ aut2.auName }}</el-tag
               >
@@ -70,9 +65,9 @@
           <el-select v-model="addForm.faAuId" placeholder="请选择">
             <el-option
               v-for="item in faList"
-              :key="item.id"
+              :key="item.auId"
               :label="item.auName"
-              :value="item.id"
+              :value="item.auId"
             >
             </el-option>
           </el-select>
@@ -119,56 +114,57 @@ export default {
   name: "Authority",
   data() {
     return {
-      autTree: [
-        {
-          id: "1",
-          auName: "用户管理",
-          children: [
-            {
-              id: "11",
-              auName: "权限管理",
-              children: null,
-            },
-            {
-              id: "12",
-              auName: "角色管理",
-              children: null,
-            },
-            {
-              id: "13",
-              auName: "用户信息管理",
-              children: null,
-            },
-          ],
-        },
-        {
-          id: "2",
-          auName: "竞赛管理",
-          children: [
-            {
-              id: "21",
-              auName: "竞赛分类管理",
-              children: null,
-            },
-            {
-              id: "22",
-              auName: "竞赛信息管理",
-              children: null,
-            },
-          ],
-        },
-        {
-          id: "3",
-          auName: "论坛管理",
-          children: [
-            {
-              id: "31",
-              auName: "文章信息管理",
-              children: null,
-            },
-          ],
-        },
-      ],
+      autTree: [],
+      // autTree: [
+      //   {
+      //     id: "1",
+      //     auName: "用户管理",
+      //     children: [
+      //       {
+      //         id: "11",
+      //         auName: "权限管理",
+      //         children: null,
+      //       },
+      //       {
+      //         id: "12",
+      //         auName: "角色管理",
+      //         children: null,
+      //       },
+      //       {
+      //         id: "13",
+      //         auName: "用户信息管理",
+      //         children: null,
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     id: "2",
+      //     auName: "竞赛管理",
+      //     children: [
+      //       {
+      //         id: "21",
+      //         auName: "竞赛分类管理",
+      //         children: null,
+      //       },
+      //       {
+      //         id: "22",
+      //         auName: "竞赛信息管理",
+      //         children: null,
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     id: "3",
+      //     auName: "论坛管理",
+      //     children: [
+      //       {
+      //         id: "31",
+      //         auName: "文章信息管理",
+      //         children: null,
+      //       },
+      //     ],
+      //   },
+      // ],
       //添加对话框
       addDialogVisible: false,
       addForm: {
@@ -183,10 +179,10 @@ export default {
       editForm: {},
     };
   },
+  created() {
+    this.getAutTree();
+  },
   methods: {
-    created() {
-      //   this.getAutTree();
-    },
     //获取权限树
     async getAutTree() {
       const { data: res } = await this.$http.get("authority/getauthority");
@@ -194,11 +190,10 @@ export default {
     },
     //添加对话框方法
     async getfalist() {
-      if (this.addForm.auLevel !== "0") {
+      if (this.addForm.auLevel === "1" || this.addForm.auLevel === "2") {
         const { data: res } = await this.$http.get(
           "authority/getauthority/?auLevel=" + this.addForm.auLevel
         );
-
         this.faList = res.data;
       }
     },
@@ -220,25 +215,22 @@ export default {
       this.addDialogVisible = false;
       //重新获取所有权限数据
       this.getAutTree();
+      //父组件通信
+      this.$emit("menuAu");
     },
     //修改对话框方法
     getAutById(id) {
-      console.log(id);
       for (let au of this.autTree) {
-        if (au.id == id) {
-          this.editForm = { auName: au.auName, auPath: "" };
+        if (au.auId == id) {
+          this.editForm = { auId:id,auName: au.auName, auPath: "" };
           this.editDialogVisible = true;
-          console.log(au, au.id, id);
-          console.log(this.editForm);
           return;
         }
         if (au.children) {
           for (let au1 of au.children) {
-            if (au1.id == id) {
-              this.editForm = { auName: au1.auName, auPath: au1.auPath };
+            if (au1.auId == id) {
+              this.editForm = { auId:id,auName: au1.auName, auPath: au1.auPath };
               this.editDialogVisible = true;
-              console.log(au1, au1.id, id);
-              console.log(this.editForm);
               return;
             }
           }
@@ -256,6 +248,8 @@ export default {
       );
 
       this.getAutTree();
+      //父组件通信
+      this.$emit("menuAu");
       this.editDialogVisible = false;
     },
     //删除权限方法
@@ -283,6 +277,7 @@ export default {
       const { data: res } = await this.$http.post(
         "/authority/deleteroleauthority",
         {
+          roleId: "",
           auId: id,
         }
       );
@@ -298,37 +293,24 @@ export default {
         message: "删除权限成功",
         type: "success",
       });
-      console.log(res);
+      this.getAutTree();
+      this.$emit("menuAu");
     },
   },
 };
 </script>
 
 <style>
-.el-button.addAutButton {
-  margin: 10px;
-}
-
 .el-tag {
   margin: 7px;
 }
 
 .bdtop {
-  border-top: 1px solid #909399;
+  border-top: 1px solid #eee;
 }
 
 .bdbottom {
-  border-bottom: 1px solid #909399;
-}
-
-.bdleft {
-  border-left: 1px solid #909399;
-  margin-left: 5px;
-}
-
-.bdright {
-  border-right: 1px solid #909399;
-  margin-right: 5px;
+  border-bottom: 1px solid #eee;
 }
 
 .vcenter {
