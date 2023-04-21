@@ -226,12 +226,50 @@ export default {
       this.getClassList()
     },
     async removeNatureSortById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("subject/deletenature", {
         natureId: id,
       });
       this.getClassList();
     },
     async removeSubjectSortById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("subject/deletesubject", {
         subjectId: id,
       });

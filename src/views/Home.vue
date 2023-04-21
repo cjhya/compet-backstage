@@ -3,9 +3,8 @@
     <header class="header">
       <div class="rightItem">
         <el-dropdown>
-          <!-- <el-avatar shape="square">程家豪</el-avatar> -->
           <span class="el-dropdown-link">
-            {{userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
+            {{ userName }}<i class="el-icon-caret-bottom el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="toHomePage">首页</el-dropdown-item>
@@ -21,7 +20,6 @@
           :default-active="activePath"
           :router="true"
           :collapse-transition="false"
-          :unique-opened="true"
           background-color="#304156"
           text-color="#bfcbd9"
           active-text-color="#409eff"
@@ -70,7 +68,7 @@ export default {
   data() {
     return {
       roleId: "",
-      userName:"",
+      userName: "",
       menuList: [],
       // menuList: [
       //   {
@@ -107,13 +105,13 @@ export default {
         7: "el-icon-files",
         8: "el-icon-s-order",
         9: "el-icon-document",
-        10:"el-icon-tickets"
+        10: "el-icon-tickets",
       },
     };
   },
   created() {
     this.roleId = this.$store.getters.getUser.roleId;
-    this.userName=this.$store.getters.getUser.name;
+    this.userName = this.$store.getters.getUser.name;
     this.getMenuList();
   },
   methods: {
@@ -127,6 +125,7 @@ export default {
     //返回首页
     toHomePage() {
       this.$router.push("/homePage");
+      this.activePath = "";
     },
     //退出登录
     logout() {

@@ -19,41 +19,41 @@
         stripe
         v-show="curTable == '抽象竞赛信息'"
       >
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column
           label="竞赛名称"
           prop="absComName"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="竞赛简介"
           prop="absComIntroduction"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="主办方"
           prop="absComHost"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="竞赛级别"
           prop="absComLevel"
-          width="150"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="学科分类"
           prop="absComsubject"
-          width="150"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="联系电话"
           prop="absComPhone"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="电子邮箱"
           prop="absComEmail"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -76,16 +76,16 @@
             </el-button>
             <!-- 查看竞赛公告 -->
             <el-button
-              type="primary"
-              icon="el-icon-edit"
+              type="warning"
+              icon="el-icon-folder"
               size="mini"
               @click="inAnInfor(scope.row.absComId)"
               >公告
             </el-button>
             <!-- 进入具体信息 -->
             <el-button
-              type="primary"
-              icon="el-icon-edit"
+              type="success"
+              icon="el-icon-crop"
               size="mini"
               @click="inSpecificInfor(scope.row.absComId)"
               >详情信息
@@ -100,42 +100,43 @@
         border
         stripe
         v-show="curTable == '具体竞赛信息'"
+        id="speCom"
       >
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column
           label="具体竞赛名称"
           prop="comName"
-          width="110"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="创建者"
           prop="comTeacher"
-          width="100"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="参赛类型"
           prop="comType"
-          width="100"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="报名起始时间"
           prop="comLoginstarttime"
-          width="160"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="报名截至时间"
           prop="comLoginendtime"
-          width="160"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="进行起始时间"
           prop="comDostarttime"
-          width="160"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="进行截至时间"
           prop="comDoendtime"
-          width="160"
+          width="100"
         ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -159,15 +160,15 @@
             <!-- 返回上一级 -->
             <el-button
               type="primary"
-              icon="el-icon-edit"
+              icon="el-icon-edit-outline"
               size="mini"
-              @click="inRecord(scope.row.comId)"
+              @click="inRecord(scope.row.comId, scope.row.comType)"
               >查看具体参赛记录
             </el-button>
             <!-- 查看优秀作品 -->
             <el-button
               type="primary"
-              icon="el-icon-edit"
+              icon="el-icon-folder"
               size="mini"
               @click="inWorkList(scope.row.comId)"
               >查看优秀作品
@@ -175,7 +176,7 @@
             <!-- 返回上一级 -->
             <el-button
               type="primary"
-              icon="el-icon-edit"
+              icon="el-icon-crop"
               size="mini"
               @click="curTable = '抽象竞赛信息'"
               >返回上一级
@@ -191,26 +192,26 @@
         stripe
         v-show="curTable == '竞赛公告信息'"
       >
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column
           label="标题"
           prop="noteTitle"
-          width="300"
+          width="200"
         ></el-table-column>
         <el-table-column
           label="正文"
           prop="distributeText"
-          width="450"
+          width="200"
         ></el-table-column>
         <el-table-column
           label="发表时间"
           prop="distributeTime"
-          width="150"
+          width="140"
         ></el-table-column>
         <el-table-column
           label="访问量"
           prop="visitCount"
-          width="100"
+          width="60"
         ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -233,16 +234,16 @@
             </el-button>
             <!-- 返回上一级 -->
             <el-button
-              type="primary"
-              icon="el-icon-edit"
+              type="warning"
+              icon="el-icon-folder"
               size="mini"
               @click="searchAppdix(scope.row.noteId)"
               >查看附件
             </el-button>
             <!-- 返回上一级 -->
             <el-button
-              type="primary"
-              icon="el-icon-edit"
+              type="success"
+              icon="el-icon-crop"
               size="mini"
               @click="curTable = '抽象竞赛信息'"
               >返回上一级
@@ -251,48 +252,164 @@
         </el-table-column>
       </el-table>
 
-      <!-- 具体竞赛参赛信息列表 -->
+      <!-- 具体竞赛个人赛参赛信息列表 -->
       <el-table
-        :data="participationRecord"
+        :data="personalParticipationRecord"
         border
         stripe
-        v-show="curTable == '参赛信息列表'"
+        v-show="curTable == '个人赛参赛信息列表'"
+        id="personParti"
       >
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column
           label="参赛学生"
           prop="stuName"
-          width="110"
+          width="70"
         ></el-table-column>
         <el-table-column
-          label="是否支付"
-          prop="ispay"
-          width="170"
+          label="报名时间"
+          prop="signtime"
+          width="120"
         ></el-table-column>
         <el-table-column
           label="比赛状态"
           prop="state"
-          width="170"
+          width="70"
         ></el-table-column>
+        <el-table-column
+          label="比赛开始时间"
+          prop="starttime"
+          width="120"
+        ></el-table-column>
+        <el-table-column
+          label="比赛结束时间"
+          prop="endtime"
+          width="120"
+        ></el-table-column>
+        <el-table-column
+          label="参赛作品路径"
+          prop="filePath"
+          width="150"
+        ></el-table-column>
+        <el-table-column label="评委" prop="judge" width="70"></el-table-column>
         <el-table-column
           label="比赛成绩"
           prop="grade"
-          width="170"
+          width="70"
         ></el-table-column>
         <el-table-column
           label="得奖情况"
           prop="level"
-          width="170"
+          width="70"
         ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <!-- 编辑按钮 -->
+            <!-- 删除按钮 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="removeRecordById(scope.row.recordId)"
+            >
+              删除
+            </el-button>
+            <!-- 下载参赛作品按钮 -->
+            <el-button
+              type="primary"
+              icon="el-icon-download"
+              size="mini"
+              :disabled="scope.row.state != '已完成'"
+              @click="downloadPartiWorkById(scope.row.recordId)"
+            >
+              下载参赛作品
+            </el-button>
+            <!-- 返回上一级 -->
+            <el-button
+              type="primary"
+              icon="el-icon-crop"
+              size="mini"
+              @click="curTable = '具体竞赛信息'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 具体竞赛团队赛参赛信息列表 -->
+      <el-table
+        :data="teamParticipationRecord"
+        border
+        stripe
+        v-show="curTable == '团队赛参赛信息列表'"
+        id="teamParti"
+      >
+        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column
+          label="团队名称"
+          prop="teamName"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          label="指导老师"
+          prop="instruName"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          label="队长"
+          prop="capital"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          label="队员"
+          prop="stuStr"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          label="报名时间"
+          prop="signtime"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          label="比赛状态"
+          prop="state"
+          width="80"
+        ></el-table-column>
+        <el-table-column
+          label="开始时间"
+          prop="starttime"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          label="结束时间"
+          prop="endtime"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          label="参赛作品路径"
+          prop="filePath"
+          width="150"
+        ></el-table-column>
+        <el-table-column label="评委" prop="judge" width="50"></el-table-column>
+        <el-table-column
+          label="比赛成绩"
+          prop="grade"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          label="得奖情况"
+          prop="level"
+          width="60"
+        ></el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 删除按钮 -->
             <el-button
               type="primary"
               icon="el-icon-edit"
               size="mini"
-              @click="showEditDialog(scope.row.sta_id, scope.row.role)"
-              >修改
+              @click="editTeamInfor(scope.row)"
+            >
+              修改团队信息
             </el-button>
             <!-- 删除按钮 -->
             <el-button
@@ -303,10 +420,20 @@
             >
               删除
             </el-button>
+            <!-- 下载参赛作品按钮 -->
+            <el-button
+              type="primary"
+              icon="el-icon-download"
+              size="mini"
+              :disabled="scope.row.state != '已完成'"
+              @click="downloadPartiWorkById(scope.row.recordId)"
+            >
+              下载参赛作品
+            </el-button>
             <!-- 返回上一级 -->
             <el-button
               type="primary"
-              icon="el-icon-edit"
+              icon="el-icon-crop"
               size="mini"
               @click="curTable = '具体竞赛信息'"
               >返回上一级
@@ -319,7 +446,7 @@
       <el-dialog
         title="添加抽象竞赛"
         :visible.sync="addAbsComDialog"
-        width="20%"
+        width="30%"
         @close="addAbsComDialogClosed"
         append-to-body
       >
@@ -369,7 +496,7 @@
       <el-dialog
         title="修改抽象竞赛"
         :visible.sync="editAbsComDialog"
-        width="20%"
+        width="30%"
         @close="editAbsComDialogClosed"
         append-to-body
       >
@@ -419,7 +546,7 @@
       <el-dialog
         title="添加竞赛公告"
         :visible.sync="addAnnDialog"
-        width="50%"
+        width="40%"
         @close="addAnnDialogClosed"
         append-to-body
         id="ann"
@@ -456,7 +583,7 @@
       <el-dialog
         title="修改竞赛公告"
         :visible.sync="editAnnDialog"
-        width="50%"
+        width="40%"
         @close="editAnnDialogClosed"
         append-to-body
         id="editAnn"
@@ -516,8 +643,8 @@
             <template slot-scope="scope">
               <!-- 编辑按钮 -->
               <el-button
-                type="primary"
-                icon="el-icon-edit"
+                type="success"
+                icon="el-icon-download"
                 size="mini"
                 @click="downloadAppdixById(scope.row.appendixId)"
                 >下载附件
@@ -692,10 +819,10 @@
         </span>
       </el-dialog>
 
-      <!-- 添加参赛记录对话框 -->
+      <!-- 添加竞赛信息对话框 -->
       <el-dialog
-        title="添加参赛记录"
-        :visible.sync="addRecordDialog"
+        title="添加竞赛信息"
+        :visible.sync="addComDialog"
         width="30%"
         @close="addComDialogClosed"
         append-to-body
@@ -772,7 +899,7 @@
       <el-dialog
         title="查看优秀作品"
         :visible.sync="workDialog"
-        width="50%"
+        width="55%"
         append-to-body
         id="workDialog"
       >
@@ -784,7 +911,9 @@
           ref="upload2"
           :auto-upload="false"
         >
-          <el-button slot="trigger" size="small" type="primary">选择添加文件</el-button>
+          <el-button slot="trigger" size="small" type="primary" id="leftButton"
+            >选择添加文件</el-button
+          >
           <el-button size="small" type="primary" @click="makeSureUpload1"
             >确定上传</el-button
           >
@@ -792,21 +921,21 @@
 
         <!-- 附件表格信息列表 -->
         <el-table :data="excellentWorkList" border stripe>
-          <el-table-column type="index" width="100"></el-table-column>
+          <el-table-column type="index" width="50"></el-table-column>
           <el-table-column
             label="作品标题"
             prop="fileName"
-            width="110"
+            width="100"
           ></el-table-column>
           <el-table-column
             label="发表时间"
             prop="fileLoadtime"
-            width="170"
+            width="140"
           ></el-table-column>
           <el-table-column
             label="文件路径"
             prop="filePath"
-            width="170"
+            width="200"
           ></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
@@ -835,6 +964,174 @@
           <el-button @click="workDialog = false">关闭</el-button>
         </span>
       </el-dialog>
+
+      <!-- 添加个人赛参赛信息对话框 -->
+      <el-dialog
+        title="添加参赛记录"
+        :visible.sync="addPersonalRecordDialog"
+        width="30%"
+        @close="addPersonalRecordDialogClosed"
+        append-to-body
+        id="addPersonalRecord"
+      >
+        <!-- 内容主体区域 -->
+        <el-form :model="addPersonalRecordForm" label-width="100px">
+          <el-form-item label="参赛学生">
+            <el-select
+              v-model="addPersonalRecordForm.stuId"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in stus"
+                :key="item.stuId"
+                :label="item.stuName"
+                :value="item.stuId"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <!-- 底部区域 -->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addPersonalRecordDialog = false">取 消</el-button>
+          <el-button type="primary" @click="addPersonalRecord">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 添加团队赛参赛信息对话框 -->
+      <el-dialog
+        title="添加参赛记录"
+        :visible.sync="addTeamRecordDialog"
+        width="30%"
+        @close="addTeamRecordDialogClosed"
+        append-to-body
+      >
+        <!-- 内容主体区域 -->
+        <el-form :model="addTeamRecordForm" label-width="100px">
+          <el-form-item label="团队名字">
+            <el-input v-model="addTeamRecordForm.teamName"></el-input>
+          </el-form-item>
+          <el-form-item label="指导老师">
+            <el-select
+              v-model="addTeamRecordForm.instrArray"
+              multiple
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in teachers"
+                :key="item.userId"
+                :label="item.userName"
+                :value="item.userId"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="队长">
+            <el-select
+              v-model="addTeamRecordForm.captialId"
+              placeholder="请选择"
+              @change="chooseCap"
+            >
+              <el-option
+                v-for="item in stus"
+                :key="item.stuId"
+                :label="item.stuName"
+                :value="item.stuId"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="队员">
+            <el-select
+              v-model="addTeamRecordForm.stuArray"
+              multiple
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in stus"
+                :key="item.stuId"
+                :label="item.stuName"
+                :value="item.stuId"
+                :disabled="item.disabled"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <!-- 底部区域 -->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="addTeamRecordDialog = false">取 消</el-button>
+          <el-button type="primary" @click="addTeamRecord">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 修改团队信息对话框 -->
+      <el-dialog
+        title="修改团队信息"
+        :visible.sync="editTeamDialog"
+        width="30%"
+        @close="editTeamDialogClosed"
+        append-to-body
+        id="editAnn"
+      >
+        <!-- 内容主体区域 -->
+        <el-form :model="editTeamForm" label-width="100px">
+          <el-form-item label="团队名字">
+            <el-input v-model="editTeamForm.teamName"></el-input>
+          </el-form-item>
+          <el-form-item label="指导老师">
+            <el-select
+              v-model="editTeamForm.instrArray"
+              multiple
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in teachers"
+                :key="item.userId"
+                :label="item.userName"
+                :value="item.userId"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="队长">
+            <el-select
+              v-model="editTeamForm.captialId"
+              placeholder="请选择"
+              @change="editChooseCap"
+            >
+              <el-option
+                v-for="item in stus"
+                :key="item.stuId"
+                :label="item.stuName"
+                :value="item.stuId"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="队员">
+            <el-select
+              v-model="editTeamForm.stuArray"
+              multiple
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in stus"
+                :key="item.stuId"
+                :label="item.stuName"
+                :value="item.stuId"
+                :disabled="item.disabled"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <!-- 底部区域 -->
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editTeamDialog = false">取 消</el-button>
+          <el-button type="primary" @click="editTeam">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -856,8 +1153,10 @@ export default {
       announceList: [],
       //优秀作品列表
       excellentWorkList: [],
-      //具体参赛记录列表
-      participationRecord: [],
+      //个人赛参赛记录列表
+      personalParticipationRecord: [],
+      //团队赛参赛记录列表
+      teamParticipationRecord: [],
       //可选择的学科列表
       subjectList: [],
       //性质，学科数组
@@ -871,26 +1170,33 @@ export default {
       ],
       //所有老师
       teachers: [],
+      //所有学生
+      stus: [],
       //当前表格类型 "抽象竞赛信息" "具体竞赛信息" "竞赛公告信息" "参赛信息列表" "优秀作品列表"
       curTable: "抽象竞赛信息",
       //当前具体竞赛信息所属抽象竞赛Id
       absComId: "",
       //当前参赛记录或优秀作品所属具体竞赛Id
       comId: "",
+      //当前操作竞赛类型 "个人赛"/"团队赛"
+      comType: "",
       //当前附件操作所属公告id
       noteId: "",
       //添加对话框开关
       addAbsComDialog: false,
       addComDialog: false,
       addAnnDialog: false,
-      addRecordDialog: false,
+      addPersonalRecordDialog: false,
+      addTeamRecordDialog: false,
       addWorkDialog: false,
       //修改对话框开关
       editAbsComDialog: false,
       editComDialog: false,
       editAnnDialog: false,
-      editRecordDialog: false,
+      editPersonalRecordDialog: false,
+      editTeamRecordDialog: false,
       editWorkDialog: false,
+      editTeamDialog: false,
       //查看附件对话框
       appdixDialog: false,
       //查看优秀作品对话框
@@ -947,6 +1253,21 @@ export default {
         comDostarttime: "",
         comDoendtime: "",
       },
+      addPersonalRecordForm: {
+        stuId: "",
+      },
+      addTeamRecordForm: {
+        teamName: "",
+        instrArray: [],
+        captialId: "",
+        stuArray: [],
+      },
+      editTeamForm: {
+        teamName: "",
+        instrArray: [],
+        captialId: "",
+        stuArray: [],
+      },
     };
   },
   created() {
@@ -956,8 +1277,107 @@ export default {
     this.getSubList();
     //获取所有老师选择
     this.getAllTeachers();
+    //获取所有学生
+    this.getAllStus();
   },
   methods: {
+    //修改团队信息对话框关闭
+    editTeamDialogClosed() {
+      this.editTeamForm = {
+        teamName: "",
+        instrArray: [],
+        captialId: "",
+        stuArray: [],
+      };
+    },
+    //修改团队信息
+    editTeamInfor(infor) {
+      this.editTeamForm = {
+        recordId: infor.recordId,
+        teamName: infor.teamName,
+        instrArray: infor.instruId,
+        captialId: infor.capitalId,
+        stuArray: infor.mateId,
+      };
+      this.editTeamDialog = true;
+    },
+    //提交修改团队信息
+    async editTeam() {
+      const { data: res } = await this.$http.post(
+        "competition/updaterecord",
+        this.editTeamForm
+      );
+      this.editTeamDialog = false;
+      this.inRecord(this.comId, this.comType);
+    },
+    //添加团队赛参赛记录
+    async addTeamRecord() {
+      const { data: res } = await this.$http.post("competition/addrecord", {
+        comId: this.comId,
+        captialId: this.addTeamRecordForm.captialId,
+        teamName: this.addTeamRecordForm.teamName,
+        instrArray: this.addTeamRecordForm.instrArray,
+        stuArray: this.addTeamRecordForm.stuArray,
+      });
+      this.addTeamRecordDialog = false;
+      this.inRecord(this.comId, this.comType);
+    },
+    //添加选择器改变触发事件
+    chooseCap() {
+      for (let stu of this.stus) {
+        if (stu.stuId == this.addTeamRecordForm.captialId) {
+          stu.disabled = true;
+        } else {
+          stu.disabled = false;
+        }
+      }
+    },
+    //修改选择器改变触发事件
+    editChooseCap() {
+      for (let stu of this.stus) {
+        if (stu.stuId == this.editTeamForm.captialId) {
+          stu.disabled = true;
+        } else {
+          stu.disabled = false;
+        }
+      }
+      if (this.editTeamForm.stuArray.includes(this.editTeamForm.captialId))
+        this.editTeamForm.stuArray = [];
+    },
+    //添加团队参赛记录对话框关闭
+    addTeamRecordDialogClosed() {
+      this.addTeamRecordForm = {};
+    },
+    //获取所有学生
+    async getAllStus() {
+      const { data: res } = await this.$http.get("user/getstudent");
+      this.stus = res.data;
+    },
+    //删除个人参赛记录
+    async removePersonalRecordById(id) {
+      const { data: res } = await this.$http.post("competition/deleterecord", {
+        recordId: id,
+      });
+      this.inRecord(this.comId, this.type);
+    },
+    //关闭添加个人赛参赛记录
+    addPersonalRecordDialogClosed() {
+      this.addPersonalRecordForm = {
+        stuId: "",
+      };
+    },
+    //提交个人赛添加
+    async addPersonalRecord() {
+      const { data: res } = await this.$http.post("competition/addrecord", {
+        comId: this.comId,
+        captialId: this.addPersonalRecordForm.stuId,
+        teamName: "",
+        instrArray: "",
+        stuArray: "",
+      });
+      this.addPersonalRecordDialog = false;
+      this.inRecord(this.comId, this.comType);
+    },
     //获取所有老师
     async getAllTeachers() {
       const { data: res } = await this.$http.get("user/getteacher");
@@ -1019,8 +1439,11 @@ export default {
         case "竞赛公告信息":
           this.addAnnDialog = true;
           break;
-        case "参赛信息信息":
-          this.addRecordDialog = true;
+        case "个人赛参赛信息列表":
+          this.addPersonalRecordDialog = true;
+          break;
+        case "团队赛参赛信息列表":
+          this.addTeamRecordDialog = true;
           break;
         case "优秀作品信息":
           this.addWorkDialog = true;
@@ -1051,7 +1474,6 @@ export default {
     async inAnInfor(id) {
       const { data: res } = await this.$http.get("note/getnote?absComId=" + id);
       this.announceList = res.data;
-      console.log("公告列表", this.announceList);
       if (this.noteId) {
         for (let note of this.announceList) {
           if (note.noteId == this.noteId) {
@@ -1070,18 +1492,25 @@ export default {
       );
       this.absComId = id;
       this.specificInforList = res.data;
-      console.log("具体竞赛信息", this.specificInforList);
       this.curTable = "具体竞赛信息";
     },
     //查看具体参赛记录信息
-    async inRecord(id) {
+    async inRecord(id, type) {
       const { data: res } = await this.$http.get(
         "competition/getrecord?comId=" + id
       );
       this.comId = id;
-      this.participationRecord = res.data;
-      console.log("参赛记录列表", this.participationRecord);
-      this.curTable = "参赛信息列表";
+      this.comType = type;
+      switch (type) {
+        case "个人赛":
+          this.curTable = "个人赛参赛信息列表";
+          this.personalParticipationRecord = res.data;
+          break;
+        case "团队赛":
+          this.curTable = "团队赛参赛信息列表";
+          this.teamParticipationRecord = res.data;
+          break;
+      }
     },
     //查看优秀作品列表
     async inWorkList(id) {
@@ -1094,6 +1523,25 @@ export default {
     },
     //删除抽象竞赛信息
     async removeAbsComById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post(
         "competition/deletecompetitionmeta",
         { absComId: id }
@@ -1102,6 +1550,25 @@ export default {
     },
     //删除具体竞赛信息
     async removeComById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post(
         "competition/deletecompetition",
         { comId: id }
@@ -1111,19 +1578,55 @@ export default {
     },
     //删除公告信息
     async removeAnnById(id) {
-      console.log("删除公告Id", id);
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("note/deletenote", {
         noteId: id,
       });
-      console.log("删除公告", res);
       this.inAnInfor(this.absComId);
     },
     //删除具体参赛记录
     async removeRecordById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("competition/deleterecord", {
         recordId: id,
       });
-      this.inRecord(this.comId);
+      this.inRecord(this.comId, this.comType);
     },
     //删除优秀作品
     async removeFileById(id) {
@@ -1215,7 +1718,6 @@ export default {
 
       const { data: res } = await this.$http.post("note/addnote", fd);
 
-      console.log("添加时的引用", this.$refs);
       this.addAnnDialog = false;
       this.inAnInfor(this.absComId);
     },
@@ -1241,7 +1743,25 @@ export default {
     },
     //删除某个附件且同步附件表格
     async removeAppdixById(id) {
-      console.log("123123");
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("note/deleteappendix", {
         appendixId: id,
       });
@@ -1255,8 +1775,6 @@ export default {
             noteId: id,
             noteTitle: note.noteTitle,
           };
-          console.log("编辑表单", this.editAnnForm);
-          console.log("正文", note.distributeText);
           //定时器模拟异步操作
           setTimeout(() => {
             this.$refs.myEditEditor.html = note.distributeText;
@@ -1272,7 +1790,6 @@ export default {
       this.editAnnForm = {
         noteTitle: "",
       };
-      console.log("关闭后", this.editAnnForm);
     },
     //提交修改公告
     async editAnn() {
@@ -1282,7 +1799,6 @@ export default {
         distributeText: this.$refs.myEditEditor.html,
       });
       this.editAnnDialog = false;
-      console.log("修改返回信息", res);
       this.inAnInfor(this.absComId);
     },
     //添加具体竞赛对话框关闭
@@ -1312,7 +1828,6 @@ export default {
           comDoendtime: this.addComForm.comDoendtime,
         }
       );
-      console.log("添加返回信息", res);
       this.addComDialog = false;
       this.inSpecificInfor(this.absComId);
     },
@@ -1366,8 +1881,36 @@ export default {
       );
       download.click();
     },
+    //下载参赛作品
+    downloadPartiWorkById(id) {
+      var download = document.createElement("a");
+      download.setAttribute(
+        "href",
+        "https://4wr6987968.yicp.fun/competition/downloadrecord?recordId=" + id
+      );
+      download.click();
+    },
     //删除优秀作品并同步表格
     async removeWorkById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("competition/deleteitem", {
         fileId: id,
       });
@@ -1379,21 +1922,50 @@ export default {
 
 <style>
 #ann .el-dialog__body {
-  padding: 30px 40px 0 0;
+  padding: 5px 40px 0 0;
 }
-#appdixDialog .el-dialog__body {
-  padding: 30px;
+#ann .el-form-item {
+  margin-bottom: 5px;
 }
 #editAnn .el-dialog__body {
-  padding: 30px 40px 0 0;
+  padding: 5px 40px 5px 0;
 }
-.upload-demo {
-  margin: 15px 0;
+#editAnn .el-form-item {
+  margin-bottom: 5px;
+}
+#appdixDialog .upload-demo {
+  margin-bottom: 15px;
+}
+#appdixDialog .el-dialog__body {
+  padding: 15px;
+}
+#speCom .el-button {
+  margin: 5px;
+}
+#editCom .el-dialog__body {
+  padding: 15px 15px 0 15px;
+}
+#editCom .el-dialog__footer {
+  padding-bottom: 10px;
 }
 #addCom .el-dialog__body {
   padding: 30px;
 }
+#workDialog .upload-demo {
+  margin-bottom: 15px;
+}
 #workDialog .el-dialog__body {
   padding: 30px;
+}
+#leftButton {
+  margin-right: 10px;
+}
+#personParti .el-button + .el-button {
+  margin-left: 0;
+  margin-top: 10px;
+}
+#teamParti .el-button + .el-button {
+  margin-left: 0;
+  margin-top: 10px;
 }
 </style>

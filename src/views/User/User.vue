@@ -15,20 +15,20 @@
 
       <!-- 用户列表区域 -->
       <el-table :data="userList" border stripe>
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="80"></el-table-column>
         <el-table-column
           label="名字"
           prop="userName"
-          width="150"
+          width="100"
         ></el-table-column>
-        <el-table-column label="角色" width="150"
+        <el-table-column label="角色" width="80"
           ><template slot-scope="scope">
             <el-tag :type="judgeTag(scope.row.roleName)">{{
               scope.row.roleName
             }}</el-tag>
           </template></el-table-column
         >
-        <el-table-column label="是否评委" width="150"
+        <el-table-column label="是否评委" width="80"
           ><template slot-scope="scope">
             <el-tag v-if="scope.row.roleName === '老师'">{{
               scope.row.userIsjudge
@@ -38,29 +38,29 @@
         <el-table-column
           label="用户名"
           prop="userAccount"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="密码"
           prop="userPassword"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="性别"
           prop="userSex"
-          width="150"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="年龄"
           prop="userAge"
-          width="150"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="电话"
           prop="userPhone"
-          width="200"
+          width="150"
         ></el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 编辑按钮 -->
             <el-button
@@ -218,7 +218,6 @@ export default {
     //获取用户列表
     async getUserList() {
       const { data: res } = await this.$http.get("user/getuser");
-      console.log("用户列表", res);
       this.userList = res.data;
     },
     //判断角色选择标签
@@ -247,12 +246,10 @@ export default {
     },
     //添加用户
     async addUser() {
-      console.log("添加表单:", this.addUserForm);
       const { data: res } = await this.$http.post(
         "user/adduser",
         this.addUserForm
       );
-      console.log("返回值", res);
       this.addUserDialogVisible = false;
       this.getUserList();
     },
@@ -263,6 +260,25 @@ export default {
     },
     //通过ID删除用户
     async removeUserById(id) {
+      //弹框提示是否删除
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      //如果确认删除，则返回值为字符串confirm
+      //如果取消删除，则返回值为字符串cancel
+      if (confirmResult !== "confirm") {
+        return this.$message({
+          showClose: true,
+          message: "已取消删除",
+          type: "info",
+        });
+      }
       const { data: res } = await this.$http.post("user/deleteuser", {
         userId: id,
       });
@@ -286,7 +302,6 @@ export default {
       this.editUserDialogVisible = true;
     },
     async editUser() {
-      console.log(this.editForm);
       const { data: res } = this.$http.post("user/updateuser", this.editForm);
       this.editUserDialogVisible = false;
       this.getUserList();
