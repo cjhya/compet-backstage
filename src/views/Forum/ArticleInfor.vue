@@ -23,7 +23,7 @@
         v-show="curTable == '文章列表'"
         id="artInfor"
       >
-        <el-table-column type="index" width="80"></el-table-column>
+        <el-table-column type="index" width="80"> </el-table-column>
         <el-table-column
           label="文章标题"
           prop="artName"
@@ -60,6 +60,14 @@
           width="80"
         ></el-table-column>
         <el-table-column label="操作">
+          <template slot="header" slot-scope="scope">
+            <el-input
+              v-model="searchKey"
+              size="mini"
+              placeholder="输入关键字搜索"
+              @input="search(scope)"
+            />
+          </template>
           <template slot-scope="scope">
             <!-- 修改按钮 -->
             <el-button
@@ -99,7 +107,13 @@
         v-show="curTable == '主评论列表'"
         id="mainComment"
       >
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button type="primary" size="mini" @click="curTable = '文章列表'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="发表者"
           prop="commUser"
@@ -149,14 +163,6 @@
               @click="inSecondaryComment(scope.row.soncomment)"
               >查看次评论
             </el-button>
-            <!-- 查看评论信息 -->
-            <el-button
-              type="primary"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '文章列表'"
-              >返回上一级
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -169,7 +175,16 @@
         v-show="curTable == '次评论列表'"
         id="secondaryCom"
       >
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="curTable = '主评论列表'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="发表者"
           prop="commUser"
@@ -210,14 +225,6 @@
               @click="removeCommentById(scope.row.commId)"
             >
               删除
-            </el-button>
-            <!-- 查看评论信息 -->
-            <el-button
-              type="primary"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '主评论列表'"
-              >返回上一级
             </el-button>
           </template>
         </el-table-column>
@@ -294,6 +301,8 @@ export default {
   components: { Editor },
   data() {
     return {
+      //文章搜索关键字
+      searchKey: "",
       //文章列表
       articleInforList: [],
       //主评论列表
@@ -406,6 +415,13 @@ export default {
     //获取文章列表
     async getArticleInfor() {
       const { data: res } = await this.$http.get("/forum/getarticle");
+      this.articleInforList = res.data;
+    },
+    //搜索获取文章
+    async search(scope) {
+      const { data: res } = await this.$http.get(
+        "forum/getarticle?query=" + this.searchKey
+      );
       this.articleInforList = res.data;
     },
     //根据Id删除文章

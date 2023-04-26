@@ -60,7 +60,15 @@
           prop="userPhone"
           width="150"
         ></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" fixed="right">
+          <template slot="header" slot-scope="scope">
+            <el-input
+              v-model="searchKey"
+              size="mini"
+              placeholder="输入关键字搜索"
+              @input="search(scope)"
+            />
+          </template>
           <template slot-scope="scope">
             <!-- 编辑按钮 -->
             <el-button
@@ -186,6 +194,7 @@ export default {
   name: "User",
   data() {
     return {
+      searchKey: "",
       userList: [],
       addUserDialogVisible: false,
       addUserForm: {
@@ -215,6 +224,14 @@ export default {
     this.getRoles();
   },
   methods: {
+    //根据关键字对用户进行搜索
+    async search(scope) {
+      console.log("搜索关键字", this.searchKey, scope);
+      const { data: res } = await this.$http.get(
+        "user/getuser?userName=" + this.searchKey
+      );
+      this.userList = res.data;
+    },
     //获取用户列表
     async getUserList() {
       const { data: res } = await this.$http.get("user/getuser");

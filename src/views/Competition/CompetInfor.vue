@@ -48,7 +48,7 @@
         <el-table-column
           label="联系电话"
           prop="absComPhone"
-          width="100"
+          width="80"
         ></el-table-column>
         <el-table-column
           label="电子邮箱"
@@ -102,7 +102,16 @@
         v-show="curTable == '具体竞赛信息'"
         id="speCom"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="curTable = '抽象竞赛信息'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="具体竞赛名称"
           prop="comName"
@@ -173,14 +182,6 @@
               @click="inWorkList(scope.row.comId)"
               >查看优秀作品
             </el-button>
-            <!-- 返回上一级 -->
-            <el-button
-              type="primary"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '抽象竞赛信息'"
-              >返回上一级
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -192,7 +193,16 @@
         stripe
         v-show="curTable == '竞赛公告信息'"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="curTable = '抽象竞赛信息'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="标题"
           prop="noteTitle"
@@ -240,14 +250,6 @@
               @click="searchAppdix(scope.row.noteId)"
               >查看附件
             </el-button>
-            <!-- 返回上一级 -->
-            <el-button
-              type="success"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '抽象竞赛信息'"
-              >返回上一级
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -260,7 +262,16 @@
         v-show="curTable == '个人赛参赛信息列表'"
         id="personParti"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="curTable = '具体竞赛信息'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="参赛学生"
           prop="stuName"
@@ -269,7 +280,7 @@
         <el-table-column
           label="报名时间"
           prop="signtime"
-          width="120"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="比赛状态"
@@ -279,12 +290,12 @@
         <el-table-column
           label="比赛开始时间"
           prop="starttime"
-          width="120"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="比赛结束时间"
           prop="endtime"
-          width="120"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="参赛作品路径"
@@ -323,14 +334,6 @@
             >
               下载参赛作品
             </el-button>
-            <!-- 返回上一级 -->
-            <el-button
-              type="primary"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '具体竞赛信息'"
-              >返回上一级
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -343,7 +346,16 @@
         v-show="curTable == '团队赛参赛信息列表'"
         id="teamParti"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" width="120" align="center">
+          <template slot="header">
+            <el-button
+              type="primary"
+              size="mini"
+              @click="curTable = '具体竞赛信息'"
+              >返回上一级
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           label="团队名称"
           prop="teamName"
@@ -367,27 +379,27 @@
         <el-table-column
           label="报名时间"
           prop="signtime"
-          width="100"
+          width="90"
         ></el-table-column>
         <el-table-column
           label="比赛状态"
           prop="state"
-          width="80"
+          width="60"
         ></el-table-column>
         <el-table-column
           label="开始时间"
           prop="starttime"
-          width="100"
+          width="90"
         ></el-table-column>
         <el-table-column
           label="结束时间"
           prop="endtime"
-          width="100"
+          width="90"
         ></el-table-column>
         <el-table-column
           label="参赛作品路径"
           prop="filePath"
-          width="150"
+          width="130"
         ></el-table-column>
         <el-table-column label="评委" prop="judge" width="50"></el-table-column>
         <el-table-column
@@ -429,14 +441,6 @@
               @click="downloadPartiWorkById(scope.row.recordId)"
             >
               下载参赛作品
-            </el-button>
-            <!-- 返回上一级 -->
-            <el-button
-              type="primary"
-              icon="el-icon-crop"
-              size="mini"
-              @click="curTable = '具体竞赛信息'"
-              >返回上一级
             </el-button>
           </template>
         </el-table-column>
@@ -1852,12 +1856,14 @@ export default {
             comId: id,
             comName: com.comName,
             comType: com.comType,
-            comTeacher: com.comTeacher,
+            comTeacher: com.comTeacherId,
             comLoginstarttime: com.comLoginstarttime,
             comLoginendtime: com.comLoginendtime,
             comDostarttime: com.comDostarttime,
             comDoendtime: com.comDoendtime,
           };
+          console.log("修改表单",this.editComForm)
+          console.log("具体竞赛信息",com)
           this.editComDialog = true;
           return;
         }
