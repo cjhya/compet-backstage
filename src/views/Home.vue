@@ -106,6 +106,7 @@ export default {
         8: "el-icon-s-order",
         9: "el-icon-document",
         10: "el-icon-tickets",
+        11: "el-icon-chat-round",
       },
     };
   },
@@ -121,6 +122,7 @@ export default {
         "authority/getauthority?id=" + this.roleId
       );
       this.menuList = res.data;
+      console.log("菜单权限", this.menuList);
     },
     //返回首页
     toHomePage() {

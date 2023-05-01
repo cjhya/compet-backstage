@@ -9,6 +9,7 @@ import User from "../views/User/User.vue";
 import Classification from "../views/Competition/Classification.vue";
 import CompetInfor from "../views/Competition/CompetInfor.vue";
 import ArticleInfor from "../views/Forum/ArticleInfor.vue";
+import ChatRecord from "../views/Message/ChatRecord.vue"
 
 Vue.use(Router);
 
@@ -26,7 +27,7 @@ const router = new Router({
     {
       path: "/home",
       component: Home,
-      redirect: "/homePage",
+      redirect: "/user",
       children: [
         { path: "/homePage", component: HomePage },
         { path: "/authority", component: Authority },
@@ -35,6 +36,7 @@ const router = new Router({
         { path: "/classification", component: Classification },
         { path: "/competInfor", component: CompetInfor },
         { path: "/articleInfor", component: ArticleInfor },
+        { path: "/chatRecord", component: ChatRecord },
       ],
     },
   ],

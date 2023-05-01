@@ -236,6 +236,7 @@ export default {
     async getUserList() {
       const { data: res } = await this.$http.get("user/getuser");
       this.userList = res.data;
+      console.log("用户列表",this.userList)
     },
     //判断角色选择标签
     judgeTag(name) {
