@@ -134,7 +134,7 @@
         </el-form>
         <!-- 底部区域 -->
         <span slot="footer" class="dialog-footer">
-          <el-button @click="addDialogVisible = false">取 消</el-button>
+          <el-button @click="addUserDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="addUser">确 定</el-button>
         </span>
       </el-dialog>
@@ -236,7 +236,7 @@ export default {
     async getUserList() {
       const { data: res } = await this.$http.get("user/getuser");
       this.userList = res.data;
-      console.log("用户列表",this.userList)
+      console.log("用户列表", this.userList);
     },
     //判断角色选择标签
     judgeTag(name) {
@@ -305,6 +305,7 @@ export default {
     showEditDialog(id) {
       for (let user of this.userList) {
         if (user.userId === id) {
+          console.log("用户信息", user);
           this.editForm = {
             userId: user.userId,
             userName: user.userName,
@@ -314,6 +315,8 @@ export default {
             userSex: user.userSex,
             userAge: user.userAge,
             userPhone: user.userPhone,
+            college: user.college,
+            school: user.school,
           };
         }
       }

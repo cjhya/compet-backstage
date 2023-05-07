@@ -74,14 +74,6 @@
             >
               删除
             </el-button>
-            <!-- 查看竞赛公告 -->
-            <el-button
-              type="warning"
-              icon="el-icon-folder"
-              size="mini"
-              @click="inAnInfor(scope.row.absComId)"
-              >公告
-            </el-button>
             <!-- 进入具体信息 -->
             <el-button
               type="success"
@@ -125,6 +117,11 @@
         <el-table-column
           label="参赛类型"
           prop="comType"
+          width="80"
+        ></el-table-column>
+        <el-table-column
+          label="参赛状态"
+          prop="state"
           width="80"
         ></el-table-column>
         <el-table-column
@@ -181,6 +178,14 @@
               size="mini"
               @click="inWorkList(scope.row.comId)"
               >查看优秀作品
+            </el-button>
+            <!-- 查看竞赛公告 -->
+            <el-button
+              type="warning"
+              icon="el-icon-folder"
+              size="mini"
+              @click="inAnInfor(scope.row.comId)"
+              >公告
             </el-button>
           </template>
         </el-table-column>
@@ -682,6 +687,32 @@
       >
         <!-- 内容主体区域 -->
         <el-form :model="addComForm" label-width="100px">
+          <el-form-item label="上传图片">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+              :http-request="httpRequest4"
+              ref="uploadPic"
+              :auto-upload="false"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i
+                v-else
+                class="el-icon-plus"
+                style="
+                  font-size: 28px;
+                  color: #8c939d;
+                  width: 100px;
+                  height: 100px;
+                  line-height: 100px;
+                  text-align: center;
+                "
+              ></i>
+            </el-upload>
+          </el-form-item>
           <el-form-item label="竞赛名称">
             <el-input v-model="addComForm.comName"></el-input>
           </el-form-item>
@@ -820,82 +851,6 @@
         <span slot="footer" class="dialog-footer">
           <el-button @click="editComDialog = false">取 消</el-button>
           <el-button type="primary" @click="editCom">确 定</el-button>
-        </span>
-      </el-dialog>
-
-      <!-- 添加竞赛信息对话框 -->
-      <el-dialog
-        title="添加竞赛信息"
-        :visible.sync="addComDialog"
-        width="30%"
-        @close="addComDialogClosed"
-        append-to-body
-        id="addCom"
-      >
-        <!-- 内容主体区域 -->
-        <el-form :model="addComForm" label-width="100px">
-          <el-form-item label="竞赛名称">
-            <el-input v-model="addComForm.comName"></el-input>
-          </el-form-item>
-          <el-form-item label="竞赛类型">
-            <el-select v-model="addComForm.comType" placeholder="请选择">
-              <el-option
-                v-for="item in types"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建者">
-            <el-select v-model="addComForm.comTeacher" placeholder="请选择">
-              <el-option
-                v-for="item in teachers"
-                :key="item.userId"
-                :label="item.userName"
-                :value="item.userId"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="报名开始时间">
-            <el-date-picker
-              v-model="addComForm.comLoginstarttime"
-              type="date"
-              placeholder="选择日期"
-            >
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="报名结束时间">
-            <el-date-picker
-              v-model="addComForm.comLoginendtime"
-              type="date"
-              placeholder="选择日期"
-            >
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="比赛开始时间">
-            <el-date-picker
-              v-model="addComForm.comDostarttime"
-              type="date"
-              placeholder="选择日期"
-            >
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="比赛结束时间">
-            <el-date-picker
-              v-model="addComForm.comDoendtime"
-              type="date"
-              placeholder="选择日期"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-form>
-        <!-- 底部区域 -->
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="addComDialog = false">取 消</el-button>
-          <el-button type="primary" @click="addCom">确 定</el-button>
         </span>
       </el-dialog>
 
@@ -1272,6 +1227,8 @@ export default {
         captialId: "",
         stuArray: [],
       },
+      imageUrl: "",
+      avaFile: "",
     };
   },
   created() {
@@ -1285,6 +1242,24 @@ export default {
     this.getAllStus();
   },
   methods: {
+    httpRequest4(param) {
+      this.avaFile = param.file;
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     //修改团队信息对话框关闭
     editTeamDialogClosed() {
       this.editTeamForm = {
@@ -1410,7 +1385,7 @@ export default {
 
       const { data: res } = await this.$http.post("note/addappendix", fd);
       //更新列表
-      this.inAnInfor(this.absComId);
+      this.inAnInfor(this.comId);
     },
     async makeSureUpload1() {
       this.$refs.upload2.submit();
@@ -1476,7 +1451,9 @@ export default {
     },
     //查看竞赛公告列表
     async inAnInfor(id) {
-      const { data: res } = await this.$http.get("note/getnote?absComId=" + id);
+      const { data: res } = await this.$http.get(
+        "note/getnote?absComId=" + this.absComId
+      );
       this.announceList = res.data;
       if (this.noteId) {
         for (let note of this.announceList) {
@@ -1486,7 +1463,7 @@ export default {
           }
         }
       }
-      this.absComId = id;
+      this.comId = id;
       this.curTable = "竞赛公告信息";
     },
     //查看具体竞赛信息列表
@@ -1496,6 +1473,7 @@ export default {
       );
       this.absComId = id;
       this.specificInforList = res.data;
+      console.log("具体竞赛信息",this.specificInforList)
       this.curTable = "具体竞赛信息";
     },
     //查看具体参赛记录信息
@@ -1604,7 +1582,7 @@ export default {
       const { data: res } = await this.$http.post("note/deletenote", {
         noteId: id,
       });
-      this.inAnInfor(this.absComId);
+      this.inAnInfor(this.comId);
     },
     //删除具体参赛记录
     async removeRecordById(id) {
@@ -1718,12 +1696,15 @@ export default {
         fd.append(i, this.addAnnForm[i]);
       }
       fd.append("absComId", this.absComId);
+      fd.append("comId", this.comId);
       fd.append("distributeText", this.$refs.myEditor.html);
+      console.log("添加公告参数", fd);
 
       const { data: res } = await this.$http.post("note/addnote", fd);
+      console.log("添加公告返回信息", res);
 
       this.addAnnDialog = false;
-      this.inAnInfor(this.absComId);
+      this.inAnInfor(this.comId);
     },
     //根据附件id下载附件
     downloadAppdixById(id) {
@@ -1769,7 +1750,7 @@ export default {
       const { data: res } = await this.$http.post("note/deleteappendix", {
         appendixId: id,
       });
-      this.inAnInfor(this.absComId);
+      this.inAnInfor(this.comId);
     },
     //打开修改公告对话框
     showAnnEditDialog(id) {
@@ -1803,7 +1784,7 @@ export default {
         distributeText: this.$refs.myEditEditor.html,
       });
       this.editAnnDialog = false;
-      this.inAnInfor(this.absComId);
+      this.inAnInfor(this.comId);
     },
     //添加具体竞赛对话框关闭
     addComDialogClosed() {
@@ -1819,19 +1800,35 @@ export default {
     },
     //添加具体竞赛
     async addCom() {
+      this.$refs.uploadPic.submit();
+      let fd = new FormData();
+      // 将data转换为form-data
+      for (let i in this.addComForm) {
+        fd.append(i, this.addComForm[i]);
+      }
+      fd.append("absComId", this.absComId);
+      fd.append("headpicture", this.avaFile);
+      console.log("添加参数", this.avaFile);
+      console.log("添加fd", fd);
       const { data: res } = await this.$http.post(
         "competition/addcompetition",
-        {
-          absComId: this.absComId,
-          comName: this.addComForm.comName,
-          comType: this.addComForm.comType,
-          comTeacher: this.addComForm.comTeacher,
-          comLoginstarttime: this.addComForm.comLoginstarttime,
-          comLoginendtime: this.addComForm.comLoginendtime,
-          comDostarttime: this.addComForm.comDostarttime,
-          comDoendtime: this.addComForm.comDoendtime,
-        }
+        fd
       );
+      console.log("发布竞赛返回信息", res);
+
+      // const { data: res } = await this.$http.post(
+      //   "competition/addcompetition",
+      //   {
+      //     absComId: this.absComId,
+      //     comName: this.addComForm.comName,
+      //     comType: this.addComForm.comType,
+      //     comTeacher: this.addComForm.comTeacher,
+      //     comLoginstarttime: this.addComForm.comLoginstarttime,
+      //     comLoginendtime: this.addComForm.comLoginendtime,
+      //     comDostarttime: this.addComForm.comDostarttime,
+      //     comDoendtime: this.addComForm.comDoendtime,
+      //   }
+      // );
       this.addComDialog = false;
       this.inSpecificInfor(this.absComId);
     },
@@ -1862,8 +1859,8 @@ export default {
             comDostarttime: com.comDostarttime,
             comDoendtime: com.comDoendtime,
           };
-          console.log("修改表单",this.editComForm)
-          console.log("具体竞赛信息",com)
+          console.log("修改表单", this.editComForm);
+          console.log("具体竞赛信息", com);
           this.editComDialog = true;
           return;
         }
@@ -1926,7 +1923,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #ann .el-dialog__body {
   padding: 5px 40px 0 0;
 }
@@ -1973,5 +1970,21 @@ export default {
 #teamParti .el-button + .el-button {
   margin-left: 0;
   margin-top: 10px;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
 }
 </style>

@@ -77,6 +77,7 @@ export default {
         });
       }
       window.sessionStorage.setItem("token", res.data.userId);
+      console.log("登录返回信息",res.data)
       this.$store.dispatch('asyncUpdateUser', res.data)
       this.$message({
         showClose: true,
