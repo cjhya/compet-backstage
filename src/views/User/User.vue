@@ -15,30 +15,34 @@
 
       <!-- 用户列表区域 -->
       <el-table :data="userList" border stripe>
-        <el-table-column type="index" width="80"></el-table-column>
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column
           label="名字"
           prop="userName"
-          width="100"
+          width="60"
         ></el-table-column>
-        <el-table-column label="角色" width="80"
+        <el-table-column label="角色" width="70"
           ><template slot-scope="scope">
-            <el-tag :type="judgeTag(scope.row.roleName)">{{
-              scope.row.roleName
-            }}</el-tag>
+            <el-tag
+              :type="judgeTag(scope.row.roleName)"
+              style="margin: 0 auto"
+              >{{ scope.row.roleName }}</el-tag
+            >
           </template></el-table-column
         >
-        <el-table-column label="是否评委" width="80"
+        <el-table-column label="评委" width="60"
           ><template slot-scope="scope">
-            <el-tag v-if="scope.row.roleName === '老师'">{{
-              scope.row.userIsjudge
-            }}</el-tag>
+            <el-tag
+              v-if="scope.row.roleName === '老师'"
+              style="margin: 0 auto"
+              >{{ scope.row.userIsjudge }}</el-tag
+            >
           </template>
         </el-table-column>
         <el-table-column
           label="用户名"
           prop="userAccount"
-          width="100"
+          width="60"
         ></el-table-column>
         <el-table-column
           label="密码"
@@ -48,17 +52,32 @@
         <el-table-column
           label="性别"
           prop="userSex"
-          width="80"
+          width="45"
         ></el-table-column>
         <el-table-column
           label="年龄"
           prop="userAge"
-          width="80"
+          width="45"
+        ></el-table-column>
+        <el-table-column
+          label="学校"
+          prop="college"
+          width="90"
+        ></el-table-column>
+        <el-table-column
+          label="学校"
+          prop="school"
+          width="90"
+        ></el-table-column>
+        <el-table-column
+          label="邮箱"
+          prop="userEmail"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="电话"
           prop="userPhone"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column label="操作" fixed="right">
           <template slot="header" slot-scope="scope">
@@ -102,6 +121,31 @@
       >
         <!-- 内容主体区域 -->
         <el-form :model="addUserForm" label-width="80px">
+          <el-form-item label="上传头像">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :http-request="httpRequest"
+              ref="uploadAva"
+              :auto-upload="false"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i
+                v-else
+                class="el-icon-plus"
+                style="
+                  font-size: 28px;
+                  color: #8c939d;
+                  width: 100px;
+                  height: 100px;
+                  line-height: 100px;
+                  text-align: center;
+                "
+              ></i>
+            </el-upload>
+          </el-form-item>
           <el-form-item label="姓名">
             <el-input v-model="addUserForm.userName"></el-input>
           </el-form-item>
@@ -127,6 +171,15 @@
           </el-form-item>
           <el-form-item label="年龄">
             <el-input v-model="addUserForm.userAge"></el-input>
+          </el-form-item>
+          <el-form-item label="学校">
+            <el-input v-model="addUserForm.college"></el-input>
+          </el-form-item>
+          <el-form-item label="学院">
+            <el-input v-model="addUserForm.school"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱">
+            <el-input v-model="addUserForm.userEmail"></el-input>
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="addUserForm.userPhone"></el-input>
@@ -175,6 +228,15 @@
           <el-form-item label="年龄">
             <el-input v-model="editForm.userAge"></el-input>
           </el-form-item>
+          <el-form-item label="学校">
+            <el-input v-model="editForm.college"></el-input>
+          </el-form-item>
+          <el-form-item label="学院">
+            <el-input v-model="editForm.school"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱">
+            <el-input v-model="editForm.userEmail"></el-input>
+          </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="editForm.userPhone"></el-input>
           </el-form-item>
@@ -205,10 +267,14 @@ export default {
         userSex: "",
         userAge: "",
         userPhone: "",
+        userEmail: "",
+        college: "",
+        school: "",
       },
       roleList: [],
       editUserDialogVisible: false,
       editForm: {
+        userId: "",
         userName: "",
         userAccount: "",
         userPassword: "",
@@ -216,7 +282,13 @@ export default {
         userSex: "",
         userAge: "",
         userPhone: "",
+        userEmail: "",
+        college: "",
+        school: "",
       },
+      //上传头像
+      avaFile: "",
+      imageUrl: "",
     };
   },
   created() {
@@ -224,6 +296,23 @@ export default {
     this.getRoles();
   },
   methods: {
+    async uploadAvater(id) {
+      this.$refs.uploadAva.submit();
+      let fd = new FormData();
+      fd.append("userId", id);
+      fd.append("headpicture", this.avaFile);
+
+      const { data: res } = await this.$http.post("user/uploadheadpicture", fd);
+      console.log("上传头像返回信息", res);
+      this.getUserList();
+    },
+    httpRequest(param) {
+      this.avaFile = param.file;
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+      console.log("图片路径", this.imageUrl);
+    },
     //根据关键字对用户进行搜索
     async search(scope) {
       console.log("搜索关键字", this.searchKey, scope);
@@ -259,6 +348,9 @@ export default {
         userSex: "",
         userAge: "",
         userPhone: "",
+        userEmail: "",
+        college: "",
+        school: "",
       };
       this.addUserDialogVisible = false;
     },
@@ -269,7 +361,7 @@ export default {
         this.addUserForm
       );
       this.addUserDialogVisible = false;
-      this.getUserList();
+      this.uploadAvater(res.userId);
     },
     //修改对话框关闭方法
     editDialogClosed() {
@@ -317,13 +409,18 @@ export default {
             userPhone: user.userPhone,
             college: user.college,
             school: user.school,
+            userEmail: user.userEmail,
           };
         }
       }
       this.editUserDialogVisible = true;
     },
     async editUser() {
-      const { data: res } = this.$http.post("user/updateuser", this.editForm);
+      const { data: res } = await this.$http.post(
+        "user/updateuser",
+        this.editForm
+      );
+      console.log("修改用户信息返回信息", res);
       this.editUserDialogVisible = false;
       this.getUserList();
     },
@@ -331,4 +428,20 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+</style>

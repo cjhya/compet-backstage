@@ -48,7 +48,7 @@
 
     <!-- 添加分类对话框 -->
     <el-dialog
-      title="添加权限"
+      title="添加分类"
       :visible.sync="addSortDialogVisible"
       width="30%"
       @close="addDialogClosed"
@@ -139,6 +139,8 @@ export default {
     getfalist() {
       if (this.addForm.sortLevel == "1") {
         this.faList = this.classList;
+      }else{
+        this.faList=[]
       }
     },
     addDialogClosed() {

@@ -10,6 +10,9 @@ import Classification from "../views/Competition/Classification.vue";
 import CompetInfor from "../views/Competition/CompetInfor.vue";
 import ArticleInfor from "../views/Forum/ArticleInfor.vue";
 import ChatRecord from "../views/Message/ChatRecord.vue"
+import DataAnalyze from "../views/Competition/DataAnalyze.vue"
+import ActivityClass from "../views/Activity/ActivityClass.vue"
+import ActivityInfor from "../views/Activity/ActivityInfor.vue"
 
 Vue.use(Router);
 
@@ -35,8 +38,11 @@ const router = new Router({
         { path: "/user", component: User },
         { path: "/classification", component: Classification },
         { path: "/competInfor", component: CompetInfor },
+        { path: "/dataAnalyze", component: DataAnalyze },
         { path: "/articleInfor", component: ArticleInfor },
         { path: "/chatRecord", component: ChatRecord },
+        { path: "/activityClass", component: ActivityClass },
+        { path: "/activityInfor", component: ActivityInfor },
       ],
     },
   ],

@@ -7,7 +7,7 @@
         </div>
 
         <div class="login100-form validate-form">
-          <span class="login100-form-title"> 后台管理系统 </span>
+          <span class="login100-form-title"> 高校学科竞赛后台管理系统 </span>
 
           <div class="wrap-input100 validate-input">
             <input
@@ -36,7 +36,7 @@
           </div>
 
           <div class="container-login100-form-btn">
-            <button class="login100-form-btn" @click="login">登陆</button>
+            <button class="login100-form-btn" @click="login">登录</button>
           </div>
 
           <div class="text-center p-t-148"></div>
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       userName: "111",
-      password: "hhh",
+      password: "123456",
     };
   },
   methods: {
@@ -62,6 +62,7 @@ export default {
         userName: this.userName,
         password: this.password,
       });
+      console.log("登录返回信息", res);
       if (res.meta !== true) {
         return this.$message({
           showClose: true,
@@ -77,8 +78,8 @@ export default {
         });
       }
       window.sessionStorage.setItem("token", res.data.userId);
-      console.log("登录返回信息",res.data)
-      this.$store.dispatch('asyncUpdateUser', res.data)
+      console.log("登录返回信息", res.data);
+      this.$store.dispatch("asyncUpdateUser", res.data);
       this.$message({
         showClose: true,
         message: "登录成功",
@@ -86,14 +87,6 @@ export default {
       });
       this.$router.push("/home");
     },
-    // login() {
-    //   this.$message({
-    //     showClose: true,
-    //     message: "登录成功",
-    //     type: "success",
-    //   });
-    //   this.$router.push("/home");
-    // },
   },
 };
 </script>

@@ -33,6 +33,7 @@
           label="文章内容"
           prop="artContent"
           width="250"
+          :formatter="stateFormat"
         ></el-table-column>
         <el-table-column
           label="发表者"
@@ -341,6 +342,14 @@ export default {
     this.getArticleInfor();
   },
   methods: {
+    stateFormat(row, column, cellValue) {
+      if (!cellValue) return "";
+      if (cellValue.length > 100) {
+        //最长固定显示10个字符
+        return cellValue.slice(0, 100) + "...";
+      }
+      return cellValue;
+    },
     //打开修改文章对话框
     showArtEditDialog(id) {
       for (let art of this.articleInforList) {
@@ -416,6 +425,7 @@ export default {
     async getArticleInfor() {
       const { data: res } = await this.$http.get("/forum/getarticle");
       this.articleInforList = res.data;
+      console.log("返回信息",res)
     },
     //搜索获取文章
     async search(scope) {

@@ -28,7 +28,8 @@
         <el-table-column
           label="竞赛简介"
           prop="absComIntroduction"
-          width="100"
+          width="160"
+          :formatter="stateFormat"
         ></el-table-column>
         <el-table-column
           label="主办方"
@@ -41,6 +42,11 @@
           width="80"
         ></el-table-column>
         <el-table-column
+          label="官网链接"
+          prop="absComLink"
+          width="100"
+        ></el-table-column>
+        <el-table-column
           label="学科分类"
           prop="absComsubject"
           width="80"
@@ -48,7 +54,7 @@
         <el-table-column
           label="联系电话"
           prop="absComPhone"
-          width="80"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="电子邮箱"
@@ -76,6 +82,7 @@
             </el-button>
             <!-- 进入具体信息 -->
             <el-button
+              style="margin: 10px 0"
               type="success"
               icon="el-icon-crop"
               size="mini"
@@ -112,17 +119,17 @@
         <el-table-column
           label="创建者"
           prop="comTeacher"
-          width="80"
+          width="60"
         ></el-table-column>
         <el-table-column
           label="参赛类型"
           prop="comType"
-          width="80"
+          width="70"
         ></el-table-column>
         <el-table-column
           label="参赛状态"
           prop="state"
-          width="80"
+          width="70"
         ></el-table-column>
         <el-table-column
           label="报名起始时间"
@@ -143,6 +150,11 @@
           label="进行截至时间"
           prop="comDoendtime"
           width="100"
+        ></el-table-column>
+        <el-table-column
+          label="缴费金额"
+          prop="money"
+          width="70"
         ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -203,7 +215,7 @@
             <el-button
               type="primary"
               size="mini"
-              @click="curTable = '抽象竞赛信息'"
+              @click="curTable = '具体竞赛信息'"
               >返回上一级
             </el-button>
           </template>
@@ -217,6 +229,7 @@
           label="正文"
           prop="distributeText"
           width="200"
+          :formatter="stateFormat"
         ></el-table-column>
         <el-table-column
           label="发表时间"
@@ -455,7 +468,7 @@
       <el-dialog
         title="添加抽象竞赛"
         :visible.sync="addAbsComDialog"
-        width="30%"
+        width="50%"
         @close="addAbsComDialogClosed"
         append-to-body
       >
@@ -465,16 +478,31 @@
             <el-input v-model="addAbsComForm.absComName"></el-input>
           </el-form-item>
           <el-form-item label="竞赛简介">
-            <el-input
-              type="textarea"
-              v-model="addAbsComForm.absComIntroduction"
-            ></el-input>
+            <Editor ref="absComEditor" />
           </el-form-item>
           <el-form-item label="主办方">
             <el-input v-model="addAbsComForm.absComHost"></el-input>
           </el-form-item>
           <el-form-item label="竞赛级别">
-            <el-input v-model="addAbsComForm.absComLevel"></el-input>
+            <el-select
+              v-model="addAbsComForm.absComLevel"
+              placeholder="请选择"
+              @change="addChangeLevelState"
+            >
+              <el-option
+                v-for="item in levels"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="官网链接">
+            <el-input
+              v-model="addAbsComForm.absComLink"
+              :disabled="addLevelState"
+            ></el-input>
           </el-form-item>
           <el-form-item label="学科分类">
             <el-cascader
@@ -505,7 +533,7 @@
       <el-dialog
         title="修改抽象竞赛"
         :visible.sync="editAbsComDialog"
-        width="30%"
+        width="50%"
         @close="editAbsComDialogClosed"
         append-to-body
       >
@@ -515,16 +543,35 @@
             <el-input v-model="editAbsComForm.absComName"></el-input>
           </el-form-item>
           <el-form-item label="竞赛简介">
-            <el-input
+            <!-- <el-input
               type="textarea"
               v-model="editAbsComForm.absComIntroduction"
-            ></el-input>
+            ></el-input> -->
+            <Editor ref="editAbsComEditor" />
           </el-form-item>
           <el-form-item label="主办方">
             <el-input v-model="editAbsComForm.absComHost"></el-input>
           </el-form-item>
           <el-form-item label="竞赛级别">
-            <el-input v-model="editAbsComForm.absComLevel"></el-input>
+            <el-select
+              v-model="editAbsComForm.absComLevel"
+              placeholder="请选择"
+              @change="editChangeLevelState"
+            >
+              <el-option
+                v-for="item in levels"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="官网链接">
+            <el-input
+              :disabled="editLevelState"
+              v-model="editAbsComForm.absComLink"
+            ></el-input>
           </el-form-item>
           <el-form-item label="学科分类">
             <el-cascader
@@ -546,7 +593,7 @@
         </el-form>
         <!-- 底部区域 -->
         <span slot="footer" class="dialog-footer">
-          <el-button @click="addAbsComDialog = false">取 消</el-button>
+          <el-button @click="editAbsComDialog = false">取 消</el-button>
           <el-button type="primary" @click="editAbsCom">确 定</el-button>
         </span>
       </el-dialog>
@@ -574,6 +621,7 @@
               action="#"
               multiple
               :http-request="httpRequest"
+              :file-list="fileList"
               ref="upload"
               :auto-upload="false"
             >
@@ -629,7 +677,13 @@
           ref="upload1"
           :auto-upload="false"
         >
-          <el-button size="small" type="primary">选择添加文件</el-button>
+          <el-button
+            slot="trigger"
+            size="small"
+            type="primary"
+            style="margin-right: 10px"
+            >选择添加文件</el-button
+          >
           <el-button size="small" type="primary" @click="makeSureUpload"
             >确定上传</el-button
           >
@@ -693,7 +747,6 @@
               action="#"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
               :http-request="httpRequest4"
               ref="uploadPic"
               :auto-upload="false"
@@ -741,34 +794,37 @@
           <el-form-item label="报名开始时间">
             <el-date-picker
               v-model="addComForm.comLoginstarttime"
-              type="date"
-              placeholder="选择日期"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="报名结束时间">
             <el-date-picker
               v-model="addComForm.comLoginendtime"
-              type="date"
-              placeholder="选择日期"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="比赛开始时间">
             <el-date-picker
               v-model="addComForm.comDostarttime"
-              type="date"
-              placeholder="选择日期"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="比赛结束时间">
             <el-date-picker
               v-model="addComForm.comDoendtime"
-              type="date"
-              placeholder="选择日期"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="缴费金额">
+            <el-input v-model="addComForm.money"></el-input>
           </el-form-item>
         </el-form>
         <!-- 底部区域 -->
@@ -817,34 +873,41 @@
           <el-form-item label="报名开始时间">
             <el-date-picker
               v-model="editComForm.comLoginstarttime"
-              type="date"
-              placeholder="选择日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="报名结束时间">
             <el-date-picker
               v-model="editComForm.comLoginendtime"
-              type="date"
-              placeholder="选择日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="比赛开始时间">
             <el-date-picker
               v-model="editComForm.comDostarttime"
-              type="date"
-              placeholder="选择日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
           </el-form-item>
           <el-form-item label="比赛结束时间">
             <el-date-picker
               v-model="editComForm.comDoendtime"
-              type="date"
-              placeholder="选择日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
+              placeholder="选择日期时间"
             >
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="缴费金额">
+            <el-input v-model="editComForm.money"></el-input>
           </el-form-item>
         </el-form>
         <!-- 底部区域 -->
@@ -1102,6 +1165,16 @@ export default {
   components: { Editor },
   data() {
     return {
+      fileList:[],
+      //竞赛官网链接状态
+      addLevelState: false,
+      editLevelState: false,
+      //抽象竞赛级别类型
+      levels: [
+        { label: "校级", value: "校级" },
+        { label: "省级", value: "省级" },
+        { label: "国家级", value: "国家级" },
+      ],
       //文件列表
       fileList: [],
       //抽象竞赛信息列表
@@ -1169,6 +1242,7 @@ export default {
         absComEmail: "",
         absComLevel: "",
         absComsubjectId: "",
+        absComLink: "",
       },
       //修改抽象竞赛对话框表单
       editAbsComForm: {
@@ -1179,6 +1253,7 @@ export default {
         absComEmail: "",
         absComLevel: "",
         absComsubjectId: "",
+        absComLink: "",
       },
       //添加竞赛公告对话框表单
       addAnnForm: {
@@ -1201,6 +1276,7 @@ export default {
         comLoginendtime: "",
         comDostarttime: "",
         comDoendtime: "",
+        money: "0",
       },
       editComForm: {
         comId: "",
@@ -1211,6 +1287,7 @@ export default {
         comLoginendtime: "",
         comDostarttime: "",
         comDoendtime: "",
+        money: "",
       },
       addPersonalRecordForm: {
         stuId: "",
@@ -1242,23 +1319,34 @@ export default {
     this.getAllStus();
   },
   methods: {
+    stateFormat(row, column, cellValue) {
+      if (!cellValue) return "";
+      if (cellValue.length > 100) {
+        //最长固定显示10个字符
+        return cellValue.slice(0, 100) + "...";
+      }
+      return cellValue;
+    },
+    addChangeLevelState() {
+      if (this.addAbsComForm.absComLevel == "校级") {
+        this.addAbsComForm.absComLink = "";
+        this.addLevelState = true;
+      } else {
+        this.addLevelState = false;
+      }
+    },
+    editChangeLevelState() {
+      if (this.editAbsComForm.absComLevel == "校级") {
+        this.editAbsComForm.absComLink = "";
+        this.editLevelState = true;
+      }
+      this.editLevelState = false;
+    },
     httpRequest4(param) {
       this.avaFile = param.file;
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
     },
     //修改团队信息对话框关闭
     editTeamDialogClosed() {
@@ -1435,6 +1523,7 @@ export default {
         "competition/getcompetitionmeta"
       );
       this.competInforList = res.data;
+      console.log("抽象竞赛返回信息", res);
     },
     //获取可选择的学科列表
     async getSubList() {
@@ -1451,9 +1540,7 @@ export default {
     },
     //查看竞赛公告列表
     async inAnInfor(id) {
-      const { data: res } = await this.$http.get(
-        "note/getnote?absComId=" + this.absComId
-      );
+      const { data: res } = await this.$http.get("note/getnote2?comId=" + id);
       this.announceList = res.data;
       if (this.noteId) {
         for (let note of this.announceList) {
@@ -1473,7 +1560,7 @@ export default {
       );
       this.absComId = id;
       this.specificInforList = res.data;
-      console.log("具体竞赛信息",this.specificInforList)
+      console.log("具体竞赛信息", this.specificInforList);
       this.curTable = "具体竞赛信息";
     },
     //查看具体参赛记录信息
@@ -1483,6 +1570,7 @@ export default {
       );
       this.comId = id;
       this.comType = type;
+      console.log("具体参赛记录", res);
       switch (type) {
         case "个人赛":
           this.curTable = "个人赛参赛信息列表";
@@ -1582,6 +1670,7 @@ export default {
       const { data: res } = await this.$http.post("note/deletenote", {
         noteId: id,
       });
+      console.log("删除公告返回信息", res);
       this.inAnInfor(this.comId);
     },
     //删除具体参赛记录
@@ -1619,6 +1708,7 @@ export default {
     },
     //添加抽象竞赛
     async addAbsCom() {
+      this.addAbsComForm.absComIntroduction = this.$refs.absComEditor.html;
       const { data: res } = await this.$http.post(
         "competition/addcompetitionmeta",
         this.addAbsComForm
@@ -1637,10 +1727,12 @@ export default {
         absComEmail: "",
         absComLevel: "",
         absComsubjectId: "",
+        absComLink: "",
       };
     },
     //修改抽象竞赛对话框关闭
     editAbsComDialogClosed() {
+      this.$refs.editAbsComEditor.html = "";
       this.editAbsComForm = {
         absComName: "",
         absComIntroduction: "",
@@ -1649,6 +1741,7 @@ export default {
         absComEmail: "",
         absComLevel: "",
         absComsubjectId: "",
+        absComLink: "",
       };
     },
     //展示抽象修改对话框
@@ -1659,13 +1752,18 @@ export default {
           this.editAbsComForm = {
             absComId: id,
             absComName: absCom.absComName,
-            absComIntroduction: absCom.absComIntroduction,
+            absComIntroduction: "",
             absComHost: absCom.absComHost,
             absComPhone: absCom.absComPhone,
             absComEmail: absCom.absComEmail,
             absComLevel: absCom.absComLevel,
             absComsubjectId: this.subArray[1],
+            absComLink: absCom.absComLink,
           };
+          //定时器模拟异步操作
+          setTimeout(() => {
+            this.$refs.editAbsComEditor.html = absCom.absComIntroduction;
+          });
           this.editAbsComDialog = true;
           return;
         }
@@ -1673,6 +1771,7 @@ export default {
     },
     //提交修改抽象竞赛
     async editAbsCom() {
+      this.editAbsComForm.absComIntroduction = this.$refs.editAbsComEditor.html;
       const { data: res } = await this.$http.post(
         "competition/updatecompetitionmeta",
         this.editAbsComForm
@@ -1717,13 +1816,14 @@ export default {
     },
     //展示某个公告的附件列表
     searchAppdix(id) {
+      console.log("公告列表", this.announceList);
       for (let ann of this.announceList) {
         if (ann.noteId == id) {
           this.appdixArray = ann.appendix;
+          this.noteId = id;
+          this.appdixDialog = true;
+          return;
         }
-        this.noteId = id;
-        this.appdixDialog = true;
-        return;
       }
     },
     //删除某个附件且同步附件表格
@@ -1796,6 +1896,7 @@ export default {
         comLoginendtime: "",
         comDostarttime: "",
         comDoendtime: "",
+        money: "0",
       };
     },
     //添加具体竞赛
@@ -1815,20 +1916,6 @@ export default {
         fd
       );
       console.log("发布竞赛返回信息", res);
-
-      // const { data: res } = await this.$http.post(
-      //   "competition/addcompetition",
-      //   {
-      //     absComId: this.absComId,
-      //     comName: this.addComForm.comName,
-      //     comType: this.addComForm.comType,
-      //     comTeacher: this.addComForm.comTeacher,
-      //     comLoginstarttime: this.addComForm.comLoginstarttime,
-      //     comLoginendtime: this.addComForm.comLoginendtime,
-      //     comDostarttime: this.addComForm.comDostarttime,
-      //     comDoendtime: this.addComForm.comDoendtime,
-      //   }
-      // );
       this.addComDialog = false;
       this.inSpecificInfor(this.absComId);
     },
@@ -1858,6 +1945,7 @@ export default {
             comLoginendtime: com.comLoginendtime,
             comDostarttime: com.comDostarttime,
             comDoendtime: com.comDoendtime,
+            money: com.money,
           };
           console.log("修改表单", this.editComForm);
           console.log("具体竞赛信息", com);
@@ -1872,6 +1960,8 @@ export default {
         "competition/updatecompetition",
         this.editComForm
       );
+      console.log("修改竞赛表单", this.editComForm);
+      console.log("修改竞赛返回信息", res);
       this.inSpecificInfor(this.absComId);
       this.editComDialog = false;
     },
@@ -1924,13 +2014,13 @@ export default {
 </script>
 
 <style scoped>
-#ann .el-dialog__body {
+#ann /deep/ .el-dialog__body {
   padding: 5px 40px 0 0;
 }
 #ann .el-form-item {
   margin-bottom: 5px;
 }
-#editAnn .el-dialog__body {
+#editAnn /deep/ .el-dialog__body {
   padding: 5px 40px 5px 0;
 }
 #editAnn .el-form-item {
@@ -1939,25 +2029,25 @@ export default {
 #appdixDialog .upload-demo {
   margin-bottom: 15px;
 }
-#appdixDialog .el-dialog__body {
+#appdixDialog /deep/ .el-dialog__body {
   padding: 15px;
 }
 #speCom .el-button {
   margin: 5px;
 }
-#editCom .el-dialog__body {
+#editCom /deep/ .el-dialog__body {
   padding: 15px 15px 0 15px;
 }
 #editCom .el-dialog__footer {
   padding-bottom: 10px;
 }
-#addCom .el-dialog__body {
+#addCom /deep/ .el-dialog__body {
   padding: 30px;
 }
 #workDialog .upload-demo {
   margin-bottom: 15px;
 }
-#workDialog .el-dialog__body {
+#workDialog /deep/ .el-dialog__body {
   padding: 30px;
 }
 #leftButton {
